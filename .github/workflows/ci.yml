@@ -19,5 +19,6 @@ jobs:
           otp-version: ${{ env.otp }}
           elixir-version: ${{ env.elixir }}
 
+      - run: mix deps.get
       - run: mix compile
       - run: make test
