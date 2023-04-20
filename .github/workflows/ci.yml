@@ -1,0 +1,20 @@
+name: "CI"
+on: ["push", "pull_request"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build & Test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.otp }}
+          elixir-version: ${{ env.elixir }}
+
+      - run: mix compile
+      - run: make test
