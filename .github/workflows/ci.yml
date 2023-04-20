@@ -1,5 +1,8 @@
 name: "CI"
 on: ["push", "pull_request"]
+env:
+  otp: "25.2"
+  elixir: "1.14.2-otp-25"
 
 jobs:
   test:
