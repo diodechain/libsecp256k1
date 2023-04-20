@@ -1,4 +1,4 @@
-# Erlang NIF C libsecp256k1 [![CircleCI](https://circleci.com/gh/exthereum/libsecp256k1.svg?style=svg)](https://circleci.com/gh/exthereum/libsecp256k1)
+# Erlang NIF C libsecp256k1
 
 ============
 
@@ -12,7 +12,7 @@ by adding `libsecp256k1` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:libsecp256k1, "~> 0.1.9"}]
+  [{:libsecp256k1, "~> 0.1.12", hex: :libsecp256k1_diode_fork}]
 end
 ```
 
