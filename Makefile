@@ -42,11 +42,12 @@ priv/libsecp256k1.a: c_src/libsecp256k1_nif.o
 	$(LIBTOOL) -static -o $@ c_src/libsecp256k1_nif.o $(EXTRALIBS)
 
 $(LIBSECP256K1): c_src/secp256k1/Makefile
-	cd c_src/secp256k1 && git reset --hard d33352151699bd7598b868369dace092f7855740 && ./autogen.sh && ./configure --enable-module-recovery --with-bignum=no $(HOSTFLAG)
 	$(MAKE) -C c_src/secp256k1
 
 c_src/secp256k1/Makefile:
+	-rm -rf c_src/secp256k1
 	cd c_src && git clone https://github.com/bitcoin/secp256k1
+	cd c_src/secp256k1 && git reset --hard d33352151699bd7598b868369dace092f7855740 && ./autogen.sh && ./configure --enable-module-recovery --with-bignum=no $(HOSTFLAG)
 
 test:
 	$(MIX) eunit
