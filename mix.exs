@@ -28,7 +28,8 @@ defmodule Libsecp256k1.Mixfile do
           "etest/libsecp256k1_tests.erl",
           "mix.exs",
           "priv/.empty",
-          "src/libsecp256k1.erl"
+          "src/libsecp256k1.erl",
+          "lib"
         ],
         maintainers: ["Dominic Letz"],
         licenses: ["MIT"],
