@@ -37,14 +37,17 @@ defmodule Libsecp256k1.Mixfile do
           "Forked from" => "https://github.com/exthereum/libsecp256k1"
         }
       ],
-      compilers: [:make_bindings, :erlang, :app],
+      compilers: [:make_bindings, :erlang, :app, :elixir],
       deps: deps()
     ]
   end
 
+  def application() do
+    [extra_applications: [common_test: :optional, edoc: :optional, eunit: :optional]]
+  end
+
   defp deps() do
     [
-      {:mix_erlang_tasks, github: "radixpool/mix-erlang-tasks", runtime: false},
       {:ex_doc, "~> 0.17", only: :dev, runtime: false}
     ]
   end
