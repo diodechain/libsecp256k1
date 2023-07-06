@@ -44,7 +44,7 @@ defmodule Libsecp256k1.Mixfile do
 
   defp deps() do
     [
-      {:mix_erlang_tasks, "0.1.0", runtime: false},
+      {:mix_erlang_tasks, github: "radixpool/mix-erlang-tasks", runtime: false},
       {:ex_doc, "~> 0.17", only: :dev, runtime: false}
     ]
   end
