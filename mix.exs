@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.Compile.MakeBindings do
   def run(_) do
-    if :os.type() != {:win32, :nt} and not File.exists("priv/libsecp256k1_nif.dll") do
+    if :os.type() != {:win32, :nt} and not File.exists?("priv/libsecp256k1_nif.dll") do
       {_, exit_code} = System.cmd("make", [], into: IO.stream(:stdio, :line))
 
       case exit_code do
