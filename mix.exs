@@ -1,10 +1,14 @@
 defmodule Mix.Tasks.Compile.MakeBindings do
   def run(_) do
-    {_, exit_code} = System.cmd("make", [], into: IO.stream(:stdio, :line))
+    if :os.type() != {:win32, :nt} and not File.exists("priv/libsecp256k1_nif.dll") do
+      {_, exit_code} = System.cmd("make", [], into: IO.stream(:stdio, :line))
 
-    case exit_code do
-      0 -> :ok
-      _ -> :error
+      case exit_code do
+        0 -> :ok
+        _ -> :error
+      end
+    else
+      :ok
     end
   end
 end
@@ -15,7 +19,7 @@ defmodule Libsecp256k1.Mixfile do
   def project do
     [
       app: :libsecp256k1,
-      version: "0.1.15",
+      version: "0.1.17",
       language: :erlang,
       description: "Erlang NIF bindings for the the libsecp256k1 library",
       package: [
@@ -45,7 +49,7 @@ defmodule Libsecp256k1.Mixfile do
   end
 
   def application() do
-    [extra_applications: [common_test: :optional, edoc: :optional, eunit: :optional]]
+    [extra_applications: [common_test: :optional, edoc: :optional, eunit: :optional, mix: :optional]]
   end
 
   defp deps() do

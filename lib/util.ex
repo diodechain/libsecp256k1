@@ -1,7 +1,7 @@
 defmodule MixErlangTasks.Util do
   def filter_opts(opts) do
     Enum.reduce(opts, [], fn
-      {name, nil}, acc -> [name|acc]
+      {name, nil}, acc -> [name | acc]
       {name, val}, acc -> [name, val | acc]
     end)
   end
@@ -9,14 +9,22 @@ defmodule MixErlangTasks.Util do
   def compile_files(files, dir) do
     File.mkdir_p!(dir)
 
-    status = Enum.reduce(files, :ok, fn path, status ->
-      case :compile.file(String.to_charlist(path),
-        [{:outdir, String.to_charlist(dir)}, :report]) do
-        {:ok, _} -> IO.puts "Compiled #{path}"; status
-        :error -> :error
-      end
-    end)
-    if status == :error, do:  Mix.raise "Encountered compilation errors"
+    status =
+      Enum.reduce(files, :ok, fn path, status ->
+        case :compile.file(
+               String.to_charlist(path),
+               [{:outdir, String.to_charlist(dir)}, :report]
+             ) do
+          {:ok, _} ->
+            IO.puts("Compiled #{path}")
+            status
+
+          :error ->
+            :error
+        end
+      end)
+
+    if status == :error, do: Mix.raise("Encountered compilation errors")
 
     Code.prepend_path(dir)
   end
