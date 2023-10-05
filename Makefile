@@ -8,6 +8,9 @@ CFLAGS += -I$(../libsecp256k1)/src
 
 ifneq ($(OS),Windows_NT)
 CFLAGS += -fPIC
+ENDING = dll
+else
+ENDING = so
 endif
 
 LIBSECP256K1 = c_src/secp256k1/.libs/libsecp256k1.a
@@ -25,7 +28,7 @@ ifeq ($(shell uname),Darwin)
 SECPLDFLAGS = -dynamiclib -undefined dynamic_lookup
 endif
 
-all: priv/libsecp256k1_nif.so
+all: priv/libsecp256k1_nif.$(ENDING)
 else
 CFLAGS += -DSTATIC_ERLANG_NIF=1
 CXXFLAGS += -DSTATIC_ERLANG_NIF=1
@@ -34,6 +37,8 @@ CXXFLAGS += -DSTATIC_ERLANG_NIF=1
 all: priv/libsecp256k1.a
 endif
 
+priv/libsecp256k1_nif.dll: | priv/libsecp256k1_nif.so
+	cp  priv/libsecp256k1_nif.so  priv/libsecp256k1_nif.dll
 priv/libsecp256k1_nif.so: c_src/libsecp256k1_nif.c $(EXTRALIBS)
 	$(CC) $(CFLAGS) -shared -o $@ c_src/libsecp256k1_nif.c $(EXTRALIBS) $(SECPLDFLAGS)
 
