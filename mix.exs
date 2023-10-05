@@ -28,6 +28,7 @@ defmodule Libsecp256k1.Mixfile do
           "etest/libsecp256k1_tests.erl",
           "mix.exs",
           "priv/.empty",
+          "priv/libsecp256k1_nif.dll",
           "src/libsecp256k1.erl",
           "lib"
         ],
