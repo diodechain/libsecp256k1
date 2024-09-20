@@ -1,14 +1,17 @@
-defmodule Mix.Tasks.Compile.MakeBindings do
-  def run(_) do
-    if :os.type() != {:win32, :nt} or not File.exists?("priv/libsecp256k1_nif.dll") do
-      {_, exit_code} = System.cmd("make", [], into: IO.stream(:stdio, :line))
+defmodule Mix.Tasks.Compile.Libsecp256k1Make do
+  use Mix.Task
+  @moduledoc false
 
-      case exit_code do
-        0 -> :ok
-        _ -> :error
+  def run(args) do
+    if :os.type() != {:win32, :nt} or not File.exists?("priv/libsecp256k1_nif.dll") do
+      Mix.shell().info("Compiling nif libsecp256k1 with args: #{inspect(args)}")
+
+      case System.cmd("make", ["-C", "."]) do
+        {_, 0} -> :ok
+        {error, code} -> {:error, ["Failed to compile NIF: #{inspect({code})}", error]}
       end
     else
-      :ok
+      Mix.shell().info("libsecp256k1 nif already compiled")
     end
   end
 end
@@ -20,7 +23,6 @@ defmodule Libsecp256k1.Mixfile do
     [
       app: :libsecp256k1,
       version: "0.1.17",
-      language: :erlang,
       description: "Erlang NIF bindings for the the libsecp256k1 library",
       package: [
         name: "libsecp256k1_diode_fork",
@@ -43,7 +45,7 @@ defmodule Libsecp256k1.Mixfile do
           "Forked from" => "https://github.com/exthereum/libsecp256k1"
         }
       ],
-      compilers: [:make_bindings, :erlang, :app, :elixir],
+      compilers: [:libsecp256k1_make] ++ Mix.compilers(),
       deps: deps()
     ]
   end
