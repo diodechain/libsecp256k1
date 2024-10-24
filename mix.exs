@@ -22,7 +22,7 @@ defmodule Libsecp256k1.Mixfile do
   def project do
     [
       app: :libsecp256k1,
-      version: "0.1.17",
+      version: "0.1.18",
       description: "Erlang NIF bindings for the the libsecp256k1 library",
       package: [
         name: "libsecp256k1_diode_fork",
