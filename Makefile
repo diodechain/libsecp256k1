@@ -52,7 +52,7 @@ $(LIBSECP256K1): c_src/secp256k1/Makefile
 c_src/secp256k1/Makefile:
 	-rm -rf c_src/secp256k1
 	cd c_src && git clone https://github.com/bitcoin/secp256k1
-	cd c_src/secp256k1 && git reset --hard d33352151699bd7598b868369dace092f7855740 && ./autogen.sh && ./configure --enable-module-recovery --with-bignum=no $(HOSTFLAG)
+	cd c_src/secp256k1 && git reset --hard f79f46c70386c693ff4e7aef0b9e7923ba284e56 && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG)
 
 test:
 	$(MIX) eunit

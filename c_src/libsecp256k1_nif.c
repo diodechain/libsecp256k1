@@ -5,11 +5,19 @@
 
 #include "erl_nif.h"
 
-#include "libsecp256k1-config.h"
-#include "secp256k1.c"
+#include <time.h>
+
 #include "include/secp256k1.h"
-#include "testrand_impl.h"
 #include "include/secp256k1_recovery.h"
+
+#include "util.h"
+#include "int128_impl.h"
+#include "hash_impl.h"
+#include "field_impl.h"
+#include "group_impl.h"
+#include "scalar_impl.h"
+#include "testrand_impl.h"
+
 
 // Key export
 #include "contrib/lax_der_parsing.c"
@@ -131,7 +139,7 @@ rand32(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ERL_NIF_TERM r;
 	unsigned char* output = enif_make_new_binary(env, 4, &r);
-	uint32_t v = secp256k1_rand32();
+	uint32_t v = testrand32();
     memcpy(&v, output, 4);
 	return r;
 }
@@ -141,7 +149,7 @@ rand256(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ERL_NIF_TERM r;
 	unsigned char* output = enif_make_new_binary(env, 32, &r);
-	secp256k1_rand256(output);
+	testrand256(output);
 	return r;
 }
 
@@ -342,7 +350,7 @@ ec_privkey_tweak_add(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     privkey_buf = enif_make_new_binary(env, 32, &r); 
 	memcpy(privkey_buf, privkey.data, privkey.size);
 
-	result = secp256k1_ec_privkey_tweak_add(ctx, privkey_buf, tweak.data);
+	result = secp256k1_ec_seckey_tweak_add(ctx, privkey_buf, tweak.data);
 
 	if (result == 0) {
 		return error_result(env, "ec_privkey_tweak_add returned 0");
@@ -411,7 +419,7 @@ ec_privkey_tweak_mul(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     privkey_buf = enif_make_new_binary(env, 32, &r); 
 	memcpy(privkey_buf, privkey.data, privkey.size);
 
-	result = secp256k1_ec_privkey_tweak_mul(ctx, privkey_buf, tweak.data);
+	result = secp256k1_ec_seckey_tweak_mul(ctx, privkey_buf, tweak.data);
 
 	if (result == 0) {
 		return error_result(env, "ec_privkey_tweak_mul returned 0");
@@ -491,10 +499,10 @@ ecdsa_sign(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
     // DER serialization may return a signature under buffer size
     // need to delay nif binary allocation
-	if (secp256k1_ecdsa_signature_serialize_der(ctx, &intermediatesig, &siglen, &signature) != 1) {
+	if (secp256k1_ecdsa_signature_serialize_der(ctx, &intermediatesig[0], &siglen, &signature) != 1) {
 		return error_result(env, "ecdsa_signature_serialize returned 0");
 	}
-    CHECK(secp256k1_ecdsa_signature_parse_der(ctx, &signature, &intermediatesig, siglen) == 1);
+    CHECK(secp256k1_ecdsa_signature_parse_der(ctx, &signature, &intermediatesig[0], siglen) == 1);
     finishedsig = enif_make_new_binary(env, siglen, &r); 
     memcpy(finishedsig, intermediatesig, siglen);
 	return ok_result(env, &r);
@@ -733,7 +741,7 @@ int get_nonce_function(ErlNifEnv* env, ERL_NIF_TERM nonce_term, ERL_NIF_TERM non
 		noncedata->size = 0;
 		return 1;
 	} else if (strcmp(nonce_atom, "nonce_function_rfc6979") == 0) {
-		*noncefp = nonce_function_rfc6979;
+		*noncefp = secp256k1_nonce_function_rfc6979;
 
 		if (!enif_inspect_binary(env, nonce_data_term, noncedata)) {
 			return 0;
