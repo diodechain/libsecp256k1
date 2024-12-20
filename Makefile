@@ -13,10 +13,10 @@ else
 ENDING = so
 endif
 
-LIBSECP256K1 = c_src/secp256k1/.libs/libsecp256k1.a
+LIBSECP256K1 = c_src/secp256k1/.libs/libsecp256k1_precomputed.a c_src/secp256k1/.libs/libsecp256k1.a
 
 ifneq (,$(HOST))
-HOSTFLAG = --host=$(HOST)
+HOSTFLAG = --host=$(HOST) --with-asm=no
 endif
 
 EXTRALIBS += $(LIBSECP256K1)
@@ -38,8 +38,9 @@ all: priv/libsecp256k1.a
 endif
 
 priv/libsecp256k1_nif.dll: | priv/libsecp256k1_nif.so
-	cp  priv/libsecp256k1_nif.so  priv/libsecp256k1_nif.dll
+	cp priv/libsecp256k1_nif.so priv/libsecp256k1_nif.dll
 priv/libsecp256k1_nif.so: c_src/libsecp256k1_nif.c $(EXTRALIBS)
+	$(MAKE) -C c_src/secp256k1 check
 	$(CC) $(CFLAGS) -shared -o $@ c_src/libsecp256k1_nif.c $(EXTRALIBS) $(SECPLDFLAGS)
 
 c_src/libsecp256k1_nif.o: $(EXTRALIBS)
