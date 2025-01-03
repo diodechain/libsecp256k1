@@ -139,7 +139,7 @@ rand32(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ERL_NIF_TERM r;
 	unsigned char* output = enif_make_new_binary(env, 4, &r);
-	uint32_t v = testrand32();
+	uint32_t v = secp256k1_testrand32();
     memcpy(&v, output, 4);
 	return r;
 }
@@ -149,7 +149,7 @@ rand256(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
 	ERL_NIF_TERM r;
 	unsigned char* output = enif_make_new_binary(env, 32, &r);
-	testrand256(output);
+	secp256k1_testrand256(output);
 	return r;
 }
 
