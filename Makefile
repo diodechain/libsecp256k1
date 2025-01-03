@@ -5,6 +5,7 @@ ERLANG_PATH ?= $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir()
 CFLAGS += -I"$(ERLANG_PATH)"
 CFLAGS += -I c_src/secp256k1 -I c_src/secp256k1/src -I c_src/secp256k1/include
 CFLAGS += -I$(../libsecp256k1)/src
+SECP256K1_VERSION = v0.5.1
 
 ifneq ($(OS),Windows_NT)
 CFLAGS += -fPIC
@@ -50,14 +51,19 @@ $(LIBSECP256K1): c_src/secp256k1/Makefile
 	$(MAKE) -C c_src/secp256k1
 
 c_src/secp256k1/Makefile:
-	-rm -rf c_src/secp256k1
-	cd c_src && git clone https://github.com/bitcoin/secp256k1
-	cd c_src/secp256k1 && git reset --hard f79f46c70386c693ff4e7aef0b9e7923ba284e56 && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG)
+	if [ ! -d c_src/secp256k1 ]; then \
+		cd c_src && git clone https://github.com/bitcoin/secp256k1; \
+	else \
+		cd c_src/secp256k1 && git fetch origin; \
+	fi
+	cd c_src/secp256k1 && git reset --hard $(SECP256K1_VERSION) && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG);
 
 test:
 	$(MIX) eunit
 
 clean:
 	$(MIX) clean
-	-rm -rf c_src/secp256k1
+	if [ -d c_src/secp256k1 ]; then \
+		$(MAKE) -C c_src/secp256k1 clean; \
+	fi
 	$(RM) priv/libsecp256k1_nif.so
