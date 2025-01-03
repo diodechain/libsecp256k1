@@ -50,13 +50,14 @@ priv/libsecp256k1.a: c_src/libsecp256k1_nif.o
 $(LIBSECP256K1): c_src/secp256k1/Makefile
 	$(MAKE) -C c_src/secp256k1
 
+.PHONY: c_src/secp256k1/Makefile
 c_src/secp256k1/Makefile:
 	if [ ! -d c_src/secp256k1 ]; then \
 		cd c_src && git clone https://github.com/bitcoin/secp256k1; \
 	else \
 		cd c_src/secp256k1 && git fetch origin; \
 	fi
-	cd c_src/secp256k1 && git reset --hard $(SECP256K1_VERSION) && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG);
+	cd c_src/secp256k1 && git reset --hard $(SECP256K1_VERSION) && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG) CFLAGS="$(CFLAGS)";
 
 test:
 	$(MIX) eunit
