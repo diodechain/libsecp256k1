@@ -57,7 +57,7 @@ c_src/secp256k1/Makefile:
 	else \
 		cd c_src/secp256k1 && git fetch origin; \
 	fi
-	cd c_src/secp256k1 && git reset --hard $(SECP256K1_VERSION) && ./autogen.sh && ./configure --enable-module-recovery $(HOSTFLAG) CFLAGS="$(CFLAGS)";
+	cd c_src/secp256k1 && git reset --hard $(SECP256K1_VERSION) && ./autogen.sh && ./configure --disable-shared --enable-module-recovery $(HOSTFLAG) CFLAGS="$(CFLAGS)";
 
 test:
 	$(MIX) eunit
